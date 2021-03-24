@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="uz.revolution.pdponlinerxkotlin.home.HomeFragment"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment_to_courseFragment"
+            app:destination="@id/courseFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_addCourse"
+            app:destination="@id/addCourse" />
+    </fragment>
+    <fragment
+        android:id="@+id/courseFragment"
+        android:name="uz.revolution.pdponlinerxkotlin.course.CourseFragment"
+        android:label="fragment_course"
+        tools:layout="@layout/fragment_course" />
+    <fragment
+        android:id="@+id/addCourse"
+        android:name="uz.revolution.pdponlinerxkotlin.settings.AddCourse"
+        android:label="fragment_add_course"
+        tools:layout="@layout/fragment_add_course" />
+</navigation>
