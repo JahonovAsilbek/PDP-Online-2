@@ -20,6 +20,7 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Action
 import io.reactivex.schedulers.Schedulers
+import uz.revolution.pdponlinerxkotlin.R
 import uz.revolution.pdponlinerxkotlin.daos.AllDaos
 import uz.revolution.pdponlinerxkotlin.database.AppDatabase
 import uz.revolution.pdponlinerxkotlin.databinding.FragmentAddCourseBinding
@@ -73,6 +74,17 @@ class AddCourse : Fragment() {
         return binding.root
     }
 
+    private fun checkCourseName(courseName: String): Boolean {
+        var check = false
+        for (i in 0 until courseList!!.size) {
+            if (courseList!![i].courseName.equals(courseName, true)) {
+                check = true
+                break
+            }
+        }
+        return check
+    }
+
     @SuppressLint("CheckResult")
     private fun loadData() {
         adapter = AddCourseAdapter()
@@ -86,6 +98,7 @@ class AddCourse : Fragment() {
                 object : Consumer<List<Course>>, io.reactivex.functions.Consumer<List<Course>> {
                     override fun accept(dataCourse: List<Course>) {
                         adapter?.submitList(dataCourse)
+                        courseList = dataCourse as ArrayList
                     }
                 },
                 @RequiresApi(Build.VERSION_CODES.N)
@@ -115,10 +128,24 @@ class AddCourse : Fragment() {
 
             if (imagePath != null && courseName.isNotEmpty()) {
 
-                Observable.fromCallable {
-                    getDao?.insertCourse(Course(courseName, imagePath))
-                }.subscribe()
-
+                if (!checkCourseName(courseName)) {
+                    Observable.fromCallable {
+                        getDao?.insertCourse(Course(courseName, imagePath))
+                    }.subscribe()
+                    binding.addCourseImage.setImageResource(R.drawable.ic_baseline_image_24)
+                    binding.addCourseEt.setText("")
+                    Toast.makeText(
+                        binding.root.context,
+                        "Muvaffaqiyatli qo'shildi!",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    Toast.makeText(
+                        binding.root.context,
+                        "$courseName nomli kurs mavjud",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             } else {
 //            Snackbar.make(binding.root, "Barcha maydonlarni to'ldiring!", Snackbar.LENGTH_LONG).show()
                 Toast.makeText(
