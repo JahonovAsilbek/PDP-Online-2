@@ -14,6 +14,7 @@ class AddCourseAdapter : ListAdapter<Course, AddCourseAdapter.VH>(MyDiffUtil()) 
 
     var onEditClick: OnEditClick? = null
     var onDeleteClick: OnDeleteClick? = null
+    var selfClickobject: SelfOnCLick? = null
 
     inner class VH(var itemCourseBinding: ItemCourseBinding) :
         RecyclerView.ViewHolder(itemCourseBinding.root) {
@@ -35,6 +36,10 @@ class AddCourseAdapter : ListAdapter<Course, AddCourseAdapter.VH>(MyDiffUtil()) 
                 onDeleteClick?.onClick(course)
             }
 
+            itemCourseBinding.courseSelfContainer.setOnClickListener {
+                selfClickobject?.onSelfClick(course)
+            }
+
         }
 
     }
@@ -53,6 +58,10 @@ class AddCourseAdapter : ListAdapter<Course, AddCourseAdapter.VH>(MyDiffUtil()) 
 
     interface OnDeleteClick {
         fun onClick(course: Course)
+    }
+
+    interface SelfOnCLick{
+        fun onSelfClick(course: Course)
     }
 
     class MyDiffUtil : DiffUtil.ItemCallback<Course>() {

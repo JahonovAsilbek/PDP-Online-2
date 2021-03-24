@@ -35,7 +35,7 @@ class AddLessonFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_lessons, container, false)
+        return inflater.inflate(R.layout.fragment_add_lesson, container, false)
     }
 
     companion object {

@@ -47,7 +47,7 @@
         android:id="@+id/lessonsFragment"
         android:name="uz.revolution.pdponlinerxkotlin.lessons_frg.LessonsFragment"
         android:label="fragment_lessons2"
-        tools:layout="@layout/fragment_lessons2" >
+        tools:layout="@layout/fragment_lesson" >
         <action
             android:id="@+id/action_lessonsFragment_to_addLessonFragment"
             app:destination="@id/addLessonFragment" />
