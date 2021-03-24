@@ -26,5 +26,39 @@
         android:id="@+id/addCourse"
         android:name="uz.revolution.pdponlinerxkotlin.settings.AddCourse"
         android:label="fragment_add_course"
-        tools:layout="@layout/fragment_add_course" />
+        tools:layout="@layout/fragment_add_course" >
+        <action
+            android:id="@+id/action_addCourse_to_modulsFragment"
+            app:destination="@id/modulsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/modulsFragment"
+        android:name="uz.revolution.pdponlinerxkotlin.moduls_frg.ModulsFragment"
+        android:label="fragment_moduls"
+        tools:layout="@layout/fragment_moduls" >
+        <action
+            android:id="@+id/action_modulsFragment_to_lessonsFragment"
+            app:destination="@id/lessonsFragment" />
+        <action
+            android:id="@+id/action_modulsFragment_to_addModulFragment"
+            app:destination="@id/addModulFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/lessonsFragment"
+        android:name="uz.revolution.pdponlinerxkotlin.lessons_frg.LessonsFragment"
+        android:label="fragment_lessons2"
+        tools:layout="@layout/fragment_lessons2" >
+        <action
+            android:id="@+id/action_lessonsFragment_to_addLessonFragment"
+            app:destination="@id/addLessonFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addLessonFragment"
+        android:name="uz.revolution.pdponlinerxkotlin.lessons_frg.AddLessonFragment"
+        android:label="AddLessonFragment" />
+    <fragment
+        android:id="@+id/addModulFragment"
+        android:name="uz.revolution.pdponlinerxkotlin.moduls_frg.AddModulFragment"
+        android:label="fragment_add_modul"
+        tools:layout="@layout/fragment_add_modul" />
 </navigation>
