@@ -5,9 +5,12 @@
     android:layout_height="wrap_content"
     android:layout_marginStart="20dp"
     android:layout_marginTop="7dp"
+    android:id="@+id/course_self_container"
     android:layout_marginEnd="20dp"
     android:layout_marginBottom="8dp"
     app:cardCornerRadius="10dp"
+    android:background="?selectableItemBackground"
+    android:foreground="?selectableItemBackground"
     app:cardElevation="7dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout

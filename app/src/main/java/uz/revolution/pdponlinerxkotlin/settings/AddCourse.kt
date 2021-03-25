@@ -16,6 +16,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.github.florent37.runtimepermission.kotlin.askPermission
 import com.google.android.material.snackbar.Snackbar
 import io.reactivex.Observable
@@ -118,6 +119,15 @@ class AddCourse : Fragment() {
     private fun loadData() {
         adapter = AddCourseAdapter()
         courseList = ArrayList()
+
+        //course item click(not edit or delete btn)     by Olimjon
+        adapter!!.selfClickobject=object:AddCourseAdapter.SelfOnCLick{
+            override fun onSelfClick(course: Course) {
+                val bundle = Bundle()
+                bundle.putSerializable("course",course)
+                findNavController().navigate(R.id.addModulFragment,bundle)
+            }
+        }
 
         getDao!!.getAllCourse()
             .subscribeOn(Schedulers.io())
