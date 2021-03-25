@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -16,6 +17,7 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import com.github.florent37.runtimepermission.kotlin.askPermission
+import com.google.android.material.snackbar.Snackbar
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Action
@@ -70,8 +72,35 @@ class AddCourse : Fragment() {
         loadData()
         imageClick()
         saveClick()
+        deleteClick()
 
         return binding.root
+    }
+
+    private fun deleteClick() {
+        adapter?.onDeleteClick = object : AddCourseAdapter.OnDeleteClick {
+            override fun onClick(course: Course) {
+                var dialog = AlertDialog.Builder(binding.root.context)
+                dialog.setMessage("Bu kurs ichida modullar kiritilgan. Modullar bilan birgalikda o’chib ketishiga rozimisiz? ")
+                dialog.setPositiveButton("Ha", object : DialogInterface.OnClickListener {
+                    override fun onClick(p0: DialogInterface?, p1: Int) {
+                        // delete course with its all modules
+                        Observable.fromCallable {
+                            getDao?.deleteCourse(course)
+                        }.subscribe()
+                        p0?.cancel()
+                        Snackbar.make(binding.root, "O'chirildi", Snackbar.LENGTH_LONG).show()
+                    }
+
+                })
+                dialog.setNegativeButton("Yo'q", object : DialogInterface.OnClickListener {
+                    override fun onClick(p0: DialogInterface?, p1: Int) {
+                        p0?.cancel()
+                    }
+                })
+                dialog.show()
+            }
+        }
     }
 
     private fun checkCourseName(courseName: String): Boolean {
@@ -134,6 +163,7 @@ class AddCourse : Fragment() {
                     }.subscribe()
                     binding.addCourseImage.setImageResource(R.drawable.ic_baseline_image_24)
                     binding.addCourseEt.setText("")
+//                    absolutePath = null
                     Toast.makeText(
                         binding.root.context,
                         "Muvaffaqiyatli qo'shildi!",
@@ -163,39 +193,7 @@ class AddCourse : Fragment() {
         }
     }
 
-    @SuppressLint("CheckResult")
-    private fun getPreviousCourseID(): Int {
-        var previousID = 0
-        getDao!!.getAllCourse()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(@RequiresApi(Build.VERSION_CODES.N)
-            object : Consumer<List<Course>>,
-                io.reactivex.functions.Consumer<List<Course>> {
-                override fun accept(t: List<Course>) {
-                    if (t.isEmpty()) {
-                        previousID = 0
-                    } else {
-                        previousID = t[t.size - 1].id!!
-                    }
-                }
 
-            },
-                @RequiresApi(Build.VERSION_CODES.N)
-                object : Consumer<Throwable>, io.reactivex.functions.Consumer<Throwable> {
-                    override fun accept(p0: Throwable) {
-
-                    }
-
-                }, object : Action {
-                    override fun run() {
-
-                    }
-
-                })
-
-        return previousID
-    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -203,7 +201,10 @@ class AddCourse : Fragment() {
             uri = data?.data ?: return
             binding.addCourseImage.setImageURI(uri)
             val openInputStream = requireActivity().contentResolver?.openInputStream(uri!!)
-            val file = File(requireActivity().filesDir, "image${getPreviousCourseID()}.jpg")
+            val file = File(
+                requireActivity().filesDir,
+                "image${courseList!![courseList!!.size - 1].id}.jpg"
+            )
             val fileOutputStream = FileOutputStream(file)
             openInputStream?.copyTo(fileOutputStream)
             openInputStream?.close()

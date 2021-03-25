@@ -3,6 +3,7 @@ package uz.revolution.pdponlinerxkotlin.home
 import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -130,7 +131,7 @@ class HomeFragment : Fragment() {
                     override fun accept(t: List<Module>) {
                         moduleList = t as ArrayList
 
-                        data?.add(GeneralData(courseList!![i], moduleList!!))
+                        data?.add(GeneralData(courseList!![i], t))
                     }
                 }, @RequiresApi(Build.VERSION_CODES.N)
                 object : Consumer<Throwable>, io.reactivex.functions.Consumer<Throwable> {
@@ -142,24 +143,6 @@ class HomeFragment : Fragment() {
 
                     }
                 })
-        }
-
-        for (i in 0..100) {
-
-            data?.add(
-                GeneralData(
-                    Course(1, "Android Development", ""),
-                    listOf(
-                        Module(1, 1, "Kotlin Intro", "", 2),
-                        Module(1, 1, "Kotlin Intro", "", 2),
-                        Module(1, 1, "Kotlin Intro", "", 2),
-                        Module(1, 1, "Kotlin Intro", "", 2),
-                        Module(1, 1, "Kotlin Intro", "", 2),
-                        Module(1, 1, "Kotlin Intro", "", 2),
-                        Module(1, 1, "Kotlin Intro", "", 2)
-                    )
-                )
-            )
         }
 
         itemHomeAdapter = ItemHomeAdapter(binding.root.context)
