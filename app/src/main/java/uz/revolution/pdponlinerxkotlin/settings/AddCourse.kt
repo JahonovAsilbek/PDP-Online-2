@@ -94,7 +94,9 @@ class AddCourse : Fragment() {
         //course item click(not edit or delete btn)     by Olimjon
         adapter!!.selfClickobject=object:AddCourseAdapter.SelfOnCLick{
             override fun onSelfClick(course: Course) {
-                findNavController().navigate(R.id.addModulFragment)
+                val bundle = Bundle()
+                bundle.putSerializable("course",course)
+                findNavController().navigate(R.id.addModulFragment,bundle)
             }
         }
 
