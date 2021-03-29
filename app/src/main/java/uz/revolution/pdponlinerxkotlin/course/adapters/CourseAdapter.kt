@@ -1,25 +1,27 @@
 package uz.revolution.pdponlinerxkotlin.course.adapters
 
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import uz.revolution.pdponlinerxkotlin.databinding.ItemCourseBinding
 import uz.revolution.pdponlinerxkotlin.databinding.ItemModuleBinding
 import uz.revolution.pdponlinerxkotlin.entities.Module
 
-class CourseAdapter : RecyclerView.Adapter<CourseAdapter.VH>() {
+class CourseAdapter : ListAdapter<Module, CourseAdapter.VH>(MyDiffUtil()) {
 
-    private var moduleList: ArrayList<Module>? = null
     private var courseName: String? = null
     private var lessonCountList: ArrayList<Int>? = null
+    private var imagePath: String? = null
     var onMoreClick: OnMoreClick? = null
 
     fun setAdapter(
-        moduleList: ArrayList<Module>,
+        imagePath: String,
         courseName: String,
         lessonCountList: ArrayList<Int>
     ) {
-        this.moduleList = moduleList
+        this.imagePath = imagePath
         this.courseName = courseName
         this.lessonCountList = lessonCountList
     }
@@ -30,6 +32,7 @@ class CourseAdapter : RecyclerView.Adapter<CourseAdapter.VH>() {
         fun onBind(module: Module, studentCount: Int) {
             itemModuleBinding.moduleName.text = module.moduleName
             itemModuleBinding.courseName.text = courseName
+            itemModuleBinding.moduleImage.setImageURI(Uri.parse(imagePath))
             itemModuleBinding.moduleSize.text = studentCount.toString()
 
             itemModuleBinding.moduleSeeMore.setOnClickListener {
@@ -43,12 +46,22 @@ class CourseAdapter : RecyclerView.Adapter<CourseAdapter.VH>() {
     }
 
     override fun onBindViewHolder(holder: VH, position: Int) {
-        holder.onBind(moduleList!![position], lessonCountList!![position])
+        holder.onBind(getItem(position), lessonCountList!![position])
     }
-
-    override fun getItemCount(): Int = moduleList!!.size
 
     interface OnMoreClick {
         fun onClick(moduleID: Int)
+    }
+
+    class MyDiffUtil : DiffUtil.ItemCallback<Module>() {
+
+        override fun areItemsTheSame(oldItem: Module, newItem: Module): Boolean {
+            return oldItem.id == newItem.id
+        }
+
+        override fun areContentsTheSame(oldItem: Module, newItem: Module): Boolean {
+            return oldItem.equals(newItem)
+        }
+
     }
 }

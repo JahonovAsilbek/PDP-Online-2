@@ -78,6 +78,7 @@ class HomeFragment : Fragment() {
                 val bundle = Bundle()
                 bundle.putInt("courseID", course.id!!)
                 bundle.putString("courseName", course.courseName)
+                bundle.putString("courseImagePath", course.imagePath)
                 findNavController().navigate(R.id.courseFragment, bundle)
             }
         }
@@ -118,9 +119,6 @@ class HomeFragment : Fragment() {
                                     override fun accept(p: List<Module>) {
 
                                         data?.add(GeneralData(t[i], p))
-
-
-
                                         generalAdapter?.setAdapter(binding.root.context, itemHomeAdapter!!)
                                         generalAdapter?.submitList(data)
 

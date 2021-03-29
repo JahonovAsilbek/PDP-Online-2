@@ -1,16 +1,14 @@
 package uz.revolution.pdponlinerxkotlin.moduls_frg
 
 import android.annotation.SuppressLint
-import android.os.Build
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.RequiresApi
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Action
 import io.reactivex.schedulers.Schedulers
@@ -19,7 +17,6 @@ import uz.revolution.pdponlinerxkotlin.databinding.FragmentAddModulBinding
 import uz.revolution.pdponlinerxkotlin.entities.Course
 import uz.revolution.pdponlinerxkotlin.entities.Module
 import uz.revolution.pdponlinerxkotlin.moduls_frg.adapters.ModulsAdapter
-import java.util.function.Consumer
 
 private const val ARG_PARAM1 = "course"
 private const val ARG_PARAM2 = "param2"
@@ -27,7 +24,7 @@ private const val ARG_PARAM2 = "param2"
 class AddModulFragment : Fragment() {
     private var param1: Course? = null
     private var param2: String? = null
-    private var binding: FragmentAddModulBinding? = null
+    lateinit var binding: FragmentAddModulBinding
     private var modulList: ArrayList<Module>? = null
     private var adapter: ModulsAdapter? = null
 
@@ -37,6 +34,7 @@ class AddModulFragment : Fragment() {
             param1 = it.getSerializable(ARG_PARAM1) as Course
             param2 = it.getString(ARG_PARAM2)
         }
+        adapter = ModulsAdapter()
     }
 
     override fun onCreateView(
@@ -47,12 +45,33 @@ class AddModulFragment : Fragment() {
 
         setToolbar()
         loadData()
-        binding!!.modulsRv.layoutManager = LinearLayoutManager(context)
-        binding!!.modulsRv.adapter = adapter
 
         addBtnClick()
 
-        return binding!!.root
+        return binding.root
+    }
+
+    private fun checkModuleLocation(location: Int): Boolean {
+        var check = false
+        for (i in 0 until modulList!!.size) {
+            if (location == modulList!![i].location) {
+                check = true
+                break
+            }
+        }
+        return check
+    }
+
+    private fun checkModuleName(moduleName: String): Boolean {
+        var check = false
+
+        for (i in 0 until modulList!!.size) {
+            if (modulList!![i].moduleName.equals(moduleName, true)) {
+                check = true
+                break
+            }
+        }
+        return check
     }
 
     @SuppressLint("CheckResult")
@@ -62,15 +81,14 @@ class AddModulFragment : Fragment() {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                @RequiresApi(Build.VERSION_CODES.N)
-                object : Consumer<List<Module>>, io.reactivex.functions.Consumer<List<Module>> {
+                object : io.reactivex.functions.Consumer<List<Module>> {
                     override fun accept(module_db: List<Module>) {
                         modulList = module_db as ArrayList<Module>
-                        adapter = ModulsAdapter(module_db,param1!!.imagePath.toString())
+                        adapter?.submitList(module_db)
+                        adapter?.setModuleImage(param1!!.imagePath.toString())
                     }
                 },
-                @RequiresApi(Build.VERSION_CODES.N)
-                object : Consumer<Throwable>, io.reactivex.functions.Consumer<Throwable> {
+                object : io.reactivex.functions.Consumer<Throwable> {
 
                     override fun accept(p0: Throwable) {
 
@@ -83,20 +101,52 @@ class AddModulFragment : Fragment() {
                     }
                 }
             )
+
+        binding.modulsRv.adapter = adapter
     }
 
     private fun addBtnClick() {
-        binding!!.addModuleBtn.setOnClickListener {
-            val name = binding!!.modulNameEt.text.toString().trim()
-            val location = binding!!.modulLocationEt.text.toString().trim()
+        binding.addModuleBtn.setOnClickListener {
+            val name = binding.modulNameEt.text.toString().trim()
+            val location = binding.modulLocationEt.text.toString().trim()
             if (name != "" && location != "") {
-                val newModul= Module(param1!!.id,name,param1!!.imagePath,location.toInt())
-                AppDatabase.get.getDatabase().getDao().insertModule(newModul)
-                modulList!!.add(newModul)
-                adapter!!.addElement(newModul)
+
+                if (!checkModuleName(name)) {
+
+                    if (!checkModuleLocation(location.toInt())) {
+                        val newModul =
+                            Module(param1!!.id, name, param1!!.imagePath, location.toInt())
+                        modulList!!.add(newModul)
+                        Observable.fromCallable {
+                            AppDatabase.get.getDatabase().getDao().insertModule(newModul)
+                        }.subscribe()
+                        Snackbar.make(
+                            binding.root,
+                            "Muvaffaqiyatli qo'shildi!",
+                            Snackbar.LENGTH_LONG
+                        )
+                            .show()
+                        binding.modulNameEt.setText("")
+                        binding.modulLocationEt.setText("")
+                    } else {
+                        Snackbar.make(
+                            binding.root,
+                            "$location o'rinli modul mavjud!",
+                            Snackbar.LENGTH_LONG
+                        )
+                            .show()
+                    }
+
+
+                } else {
+                    Snackbar.make(binding.root, "$name nomli modul mavjud!", Snackbar.LENGTH_LONG)
+                        .show()
+                }
+
+
             } else {
                 Snackbar.make(
-                    binding!!.addModuleBtn,
+                    binding.addModuleBtn,
                     "Barcha maydonlarni to'ldiring!",
                     Snackbar.LENGTH_LONG
                 ).show()
@@ -105,10 +155,11 @@ class AddModulFragment : Fragment() {
     }
 
     private fun setToolbar() {
-        binding!!.toolbar.setNavigationOnClickListener {
+        binding.toolbar.setNavigationOnClickListener {
             findNavController().popBackStack()
         }
     }
+
     companion object {
         @JvmStatic
         fun newInstance(param1: Course, param2: String) =

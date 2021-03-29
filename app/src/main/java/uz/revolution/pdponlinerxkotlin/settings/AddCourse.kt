@@ -74,8 +74,20 @@ class AddCourse : Fragment() {
         imageClick()
         saveClick()
         deleteClick()
+        editClick()
 
         return binding.root
+    }
+
+    private fun editClick() {
+        adapter?.onEditClick=object :AddCourseAdapter.OnEditClick{
+            override fun onClick(course: Course) {
+                val bundle = Bundle()
+                bundle.putSerializable("kurs", course)
+                findNavController().navigate(R.id.editCourse, bundle)
+            }
+
+        }
     }
 
     private fun deleteClick() {
@@ -121,11 +133,11 @@ class AddCourse : Fragment() {
         courseList = ArrayList()
 
         //course item click(not edit or delete btn)     by Olimjon
-        adapter!!.selfClickobject=object:AddCourseAdapter.SelfOnCLick{
+        adapter!!.selfClickobject = object : AddCourseAdapter.SelfOnCLick {
             override fun onSelfClick(course: Course) {
                 val bundle = Bundle()
-                bundle.putSerializable("course",course)
-                findNavController().navigate(R.id.addModulFragment,bundle)
+                bundle.putSerializable("course", course)
+                findNavController().navigate(R.id.addModulFragment, bundle)
             }
         }
 
@@ -204,17 +216,24 @@ class AddCourse : Fragment() {
     }
 
 
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == requestCOde && resultCode == Activity.RESULT_OK) {
             uri = data?.data ?: return
             binding.addCourseImage.setImageURI(uri)
             val openInputStream = requireActivity().contentResolver?.openInputStream(uri!!)
-            val file = File(
-                requireActivity().filesDir,
-                "image${courseList!![courseList!!.size - 1].id}.jpg"
-            )
+            var file: File? = null
+            if (courseList!!.isEmpty()) {
+                file = File(
+                    requireActivity().filesDir,
+                    "image0.jpg"
+                )
+            } else {
+                file = File(
+                    requireActivity().filesDir,
+                    "image${courseList!![courseList!!.size - 1].id}.jpg"
+                )
+            }
             val fileOutputStream = FileOutputStream(file)
             openInputStream?.copyTo(fileOutputStream)
             openInputStream?.close()
