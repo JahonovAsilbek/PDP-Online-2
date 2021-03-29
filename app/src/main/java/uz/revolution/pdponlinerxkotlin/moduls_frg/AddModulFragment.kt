@@ -22,7 +22,7 @@ private const val ARG_PARAM1 = "course"
 private const val ARG_PARAM2 = "param2"
 
 class AddModulFragment : Fragment() {
-    private var param1: Course? = null
+    private var course: Course? = null
     private var param2: String? = null
     lateinit var binding: FragmentAddModulBinding
     private var modulList: ArrayList<Module>? = null
@@ -31,7 +31,7 @@ class AddModulFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            param1 = it.getSerializable(ARG_PARAM1) as Course
+            course = it.getSerializable(ARG_PARAM1) as Course
             param2 = it.getString(ARG_PARAM2)
         }
         adapter = ModulsAdapter()
@@ -77,7 +77,7 @@ class AddModulFragment : Fragment() {
     @SuppressLint("CheckResult")
     private fun loadData() {
         modulList = ArrayList()
-        AppDatabase.get.getDatabase().getDao().getModulesByCourceID(param1!!.id!!)
+        AppDatabase.get.getDatabase().getDao().getModulesByCourceID(course!!.id!!)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
@@ -85,7 +85,7 @@ class AddModulFragment : Fragment() {
                     override fun accept(module_db: List<Module>) {
                         modulList = module_db as ArrayList<Module>
                         adapter?.submitList(module_db)
-                        adapter?.setModuleImage(param1!!.imagePath.toString())
+                        adapter?.setModuleImage(course!!.imagePath.toString())
                     }
                 },
                 object : io.reactivex.functions.Consumer<Throwable> {
@@ -115,7 +115,7 @@ class AddModulFragment : Fragment() {
 
                     if (!checkModuleLocation(location.toInt())) {
                         val newModul =
-                            Module(param1!!.id, name, param1!!.imagePath, location.toInt())
+                            Module(course!!.id, name, course!!.imagePath, location.toInt())
                         modulList!!.add(newModul)
                         Observable.fromCallable {
                             AppDatabase.get.getDatabase().getDao().insertModule(newModul)
@@ -155,6 +155,7 @@ class AddModulFragment : Fragment() {
     }
 
     private fun setToolbar() {
+        binding.toolbar.title = course?.courseName
         binding.toolbar.setNavigationOnClickListener {
             findNavController().popBackStack()
         }
@@ -162,10 +163,10 @@ class AddModulFragment : Fragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance(param1: Course, param2: String) =
+        fun newInstance(course: Course, param2: String) =
             AddModulFragment().apply {
                 arguments = Bundle().apply {
-                    putSerializable(ARG_PARAM1, param1)
+                    putSerializable(ARG_PARAM1, course)
                     putString(ARG_PARAM2, param2)
                 }
             }
