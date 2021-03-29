@@ -14,9 +14,11 @@ class ModulsAdapter :
 
     //    private var modulList: ArrayList<Module>? = null
     private var imagePath: String? = null
+    private var courseName: String? = null
 
-    fun setModuleImage(imagePath: String) {
+    fun setModuleImage(imagePath: String, courseName: String) {
         this.imagePath = imagePath
+        this.courseName = courseName
     }
 
     inner class Vh(var binding: ItemModuleBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -25,6 +27,7 @@ class ModulsAdapter :
             binding.moduleImage.setImageURI(Uri.parse(imagePath))
             binding.moduleName.text = module.moduleName
             binding.moduleSize.text = module.location.toString()
+            binding.courseName.text = courseName
         }
     }
 

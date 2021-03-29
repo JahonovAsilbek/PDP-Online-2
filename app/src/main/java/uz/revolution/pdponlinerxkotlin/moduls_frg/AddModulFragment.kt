@@ -85,7 +85,7 @@ class AddModulFragment : Fragment() {
                     override fun accept(module_db: List<Module>) {
                         modulList = module_db as ArrayList<Module>
                         adapter?.submitList(module_db)
-                        adapter?.setModuleImage(course!!.imagePath.toString())
+                        adapter?.setModuleImage(course!!.imagePath.toString(), course?.courseName!!)
                     }
                 },
                 object : io.reactivex.functions.Consumer<Throwable> {
