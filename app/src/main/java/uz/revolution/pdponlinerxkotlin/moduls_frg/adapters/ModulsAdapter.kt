@@ -15,6 +15,8 @@ class ModulsAdapter :
     //    private var modulList: ArrayList<Module>? = null
     private var imagePath: String? = null
     private var courseName: String? = null
+    var onEditClick: OnEditClick? = null
+    var onDeleteClick: OnDeleteClick? = null
 
     fun setModuleImage(imagePath: String, courseName: String) {
         this.imagePath = imagePath
@@ -28,6 +30,14 @@ class ModulsAdapter :
             binding.moduleName.text = module.moduleName
             binding.moduleSize.text = module.location.toString()
             binding.courseName.text = courseName
+
+            binding.moduleEdit.setOnClickListener {
+                onEditClick?.onClick(module)
+            }
+
+            binding.moduleTrash.setOnClickListener {
+                onDeleteClick?.onClick(module)
+            }
         }
     }
 
@@ -37,6 +47,14 @@ class ModulsAdapter :
 
     override fun onBindViewHolder(holder: Vh, position: Int) {
         holder.bindData(getItem(position))
+    }
+
+    interface OnDeleteClick {
+        fun onClick(module: Module)
+    }
+
+    interface OnEditClick {
+        fun onClick(module: Module)
     }
 
     class MyDiffUtil : DiffUtil.ItemCallback<Module>() {

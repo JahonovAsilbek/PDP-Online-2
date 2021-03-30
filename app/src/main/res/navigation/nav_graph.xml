@@ -45,6 +45,9 @@
         <action
             android:id="@+id/action_modulsFragment_to_addModulFragment"
             app:destination="@id/addModulFragment" />
+        <action
+            android:id="@+id/action_modulsFragment_to_editModule"
+            app:destination="@id/editModule" />
     </fragment>
     <fragment
         android:id="@+id/lessonsFragment"
@@ -69,4 +72,8 @@
         android:name="uz.revolution.pdponlinerxkotlin.settings.EditCourse"
         android:label="fragment_edit_course"
         tools:layout="@layout/fragment_edit_course" />
+    <fragment
+        android:id="@+id/editModule"
+        android:name="uz.revolution.pdponlinerxkotlin.moduls_frg.EditModule"
+        android:label="EditModule" />
 </navigation>

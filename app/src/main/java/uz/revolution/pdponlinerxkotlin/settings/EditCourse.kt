@@ -95,23 +95,28 @@ class EditCourse : Fragment() {
 
     private fun editClick() {
         binding.editCourseBtn.setOnClickListener {
-            val courseName = binding.editCourseEt.text.toString()
-            Log.d(TAG, "name: $courseName")
+            val courseName = binding.editCourseEt.text.toString().trim()
             val course = Course(course!!.id, courseName, absolutePath)
 
             if (courseName.isNotEmpty() && absolutePath != null) {
 
-                Observable.fromCallable {
-                    AppDatabase.get.getDatabase().getDao().updateCourse(course)
-                }.subscribe()
+                if (checkCourseName(courseName)) {
+                    Observable.fromCallable {
+                        AppDatabase.get.getDatabase().getDao().updateCourse(course)
+                    }.subscribe()
 
-                Snackbar.make(
-                    binding.root,
-                    "Muvaffaqiyatli o'zgartirildi!",
-                    Snackbar.LENGTH_LONG
-                )
-                    .show()
-                findNavController().popBackStack()
+                    Snackbar.make(
+                        binding.root,
+                        "Muvaffaqiyatli o'zgartirildi!",
+                        Snackbar.LENGTH_LONG
+                    )
+                        .show()
+                    findNavController().popBackStack()
+                } else {
+                    Snackbar.make(binding.root, "$courseName nomli kurs mavjud", Snackbar.LENGTH_LONG)
+                        .show()
+                }
+
 
             } else {
                 Snackbar.make(binding.root, "Barcha maydonlarni to'ldiring!", Snackbar.LENGTH_LONG)
@@ -155,11 +160,15 @@ class EditCourse : Fragment() {
 
     @SuppressLint("CheckResult")
     private fun checkCourseName(courseName: String): Boolean {
-        var check = false
+        var check = true
 
         for (i in 0 until courseList!!.size) {
-            if (courseName.equals(courseList!![i].courseName, true)) {
-                check = true
+            if (courseName.equals(
+                    courseList!![i].courseName,
+                    true
+                ) && !courseName.equals(course?.courseName, true)
+            ) {
+                check = false
                 break
             }
         }

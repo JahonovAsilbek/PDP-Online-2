@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import uz.revolution.pdponlinerxkotlin.R
+import uz.revolution.pdponlinerxkotlin.databinding.FragmentAddLessonBinding
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -30,12 +31,18 @@ class AddLessonFragment : Fragment() {
         }
     }
 
+    lateinit var binding:FragmentAddLessonBinding
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_add_lesson, container, false)
+    ): View {
+        binding = FragmentAddLessonBinding.inflate(layoutInflater, container, false)
+
+
+
+
+        return binding.root
     }
 
     companion object {
