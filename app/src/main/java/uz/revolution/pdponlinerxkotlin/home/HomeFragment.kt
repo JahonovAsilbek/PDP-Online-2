@@ -88,7 +88,9 @@ class HomeFragment : Fragment() {
         // ItemHomeAdapterni itemi bosilganda ishlaydigan listener
         itemHomeAdapter?.onModuleClick = object : ItemHomeAdapter.OnModuleClick {
             override fun onClick(module: Module) {
-                Toast.makeText(binding.root.context, "Item Clicked: ${module.moduleName}", Toast.LENGTH_SHORT).show()
+                val bundle = Bundle()
+                bundle.putSerializable("module", module)
+                findNavController().navigate(R.id.lessonFragment,bundle)
             }
         }
     }

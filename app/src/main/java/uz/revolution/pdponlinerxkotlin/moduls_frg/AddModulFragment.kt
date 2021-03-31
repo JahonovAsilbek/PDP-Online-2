@@ -54,8 +54,20 @@ class AddModulFragment : Fragment() {
         addBtnClick()
         deleteClick()
         editClick()
+        itemClick()
 
         return binding.root
+    }
+
+    private fun itemClick() {
+        adapter?.onItemClick=object :ModulsAdapter.OnItemClick{
+            override fun onClick(module: Module) {
+                val bundle = Bundle()
+                bundle.putSerializable("module", module)
+                bundle.putSerializable("course", course)
+                findNavController().navigate(R.id.addLesson, bundle)
+            }
+        }
     }
 
     private fun editClick() {

@@ -21,7 +21,11 @@
         android:id="@+id/courseFragment"
         android:name="uz.revolution.pdponlinerxkotlin.course.CourseFragment"
         android:label="fragment_course"
-        tools:layout="@layout/fragment_course" />
+        tools:layout="@layout/fragment_course" >
+        <action
+            android:id="@+id/action_courseFragment_to_lessonFragment"
+            app:destination="@id/lessonFragment" />
+    </fragment>
     <fragment
         android:id="@+id/addCourse"
         android:name="uz.revolution.pdponlinerxkotlin.settings.AddCourse"
@@ -41,7 +45,7 @@
         tools:layout="@layout/fragment_moduls" >
         <action
             android:id="@+id/action_modulsFragment_to_lessonsFragment"
-            app:destination="@id/lessonsFragment" />
+            app:destination="@id/addLesson" />
         <action
             android:id="@+id/action_modulsFragment_to_addModulFragment"
             app:destination="@id/addModulFragment" />
@@ -50,16 +54,16 @@
             app:destination="@id/editModule" />
     </fragment>
     <fragment
-        android:id="@+id/lessonsFragment"
+        android:id="@+id/addLesson"
         android:name="uz.revolution.pdponlinerxkotlin.lessons_frg.LessonsFragment"
         android:label="fragment_lessons2"
         tools:layout="@layout/fragment_lesson" >
         <action
             android:id="@+id/action_lessonsFragment_to_addLessonFragment"
-            app:destination="@id/addLessonFragment" />
+            app:destination="@id/editLesson" />
     </fragment>
     <fragment
-        android:id="@+id/addLessonFragment"
+        android:id="@+id/editLesson"
         android:name="uz.revolution.pdponlinerxkotlin.lessons_frg.AddLessonFragment"
         android:label="AddLessonFragment" />
     <fragment
@@ -76,4 +80,17 @@
         android:id="@+id/editModule"
         android:name="uz.revolution.pdponlinerxkotlin.moduls_frg.EditModule"
         android:label="EditModule" />
+    <fragment
+        android:id="@+id/lessonFragment"
+        android:name="uz.revolution.pdponlinerxkotlin.lessons_frg.LessonFragment"
+        android:label="LessonFragment" >
+        <action
+            android:id="@+id/action_lessonFragment_to_itemLesson"
+            app:destination="@id/itemLesson" />
+    </fragment>
+    <fragment
+        android:id="@+id/itemLesson"
+        android:name="uz.revolution.pdponlinerxkotlin.lessons_frg.ItemLesson"
+        android:label="fragment_item_lesson"
+        tools:layout="@layout/fragment_item_lesson" />
 </navigation>

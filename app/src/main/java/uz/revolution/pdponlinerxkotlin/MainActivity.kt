@@ -2,11 +2,11 @@ package uz.revolution.pdponlinerxkotlin
 
 import android.os.Bundle
 import android.os.Handler
-import android.view.View
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import uz.revolution.pdponlinerxkotlin.databinding.ActivityMainBinding
+
 
 class MainActivity : AppCompatActivity() {
     var doublePressed = false

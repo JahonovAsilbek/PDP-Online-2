@@ -7,16 +7,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
+import uz.revolution.pdponlinerxkotlin.R
 import uz.revolution.pdponlinerxkotlin.course.adapters.CourseAdapter
 import uz.revolution.pdponlinerxkotlin.daos.AllDaos
 import uz.revolution.pdponlinerxkotlin.database.AppDatabase
 import uz.revolution.pdponlinerxkotlin.databinding.FragmentCourseBinding
 import uz.revolution.pdponlinerxkotlin.entities.Lesson
 import uz.revolution.pdponlinerxkotlin.entities.Module
+import uz.revolution.pdponlinerxkotlin.models.CourseModel
 
 // comes courseID from HomeFragment
 private const val ARG_PARAM1 = "courseID"
@@ -43,9 +45,7 @@ class CourseFragment : Fragment() {
 
     lateinit var binding: FragmentCourseBinding
     private var getDao: AllDaos? = null
-
-    private var moduleList: ArrayList<Module>? = null
-    private var lessonCountList: ArrayList<Int>? = null
+    private var data: ArrayList<CourseModel>? = null
 
     private var adapter: CourseAdapter? = null
 
@@ -58,13 +58,24 @@ class CourseFragment : Fragment() {
         binding.titleCourseFragment.text = courseName
 
         loadData()
+        itemClick()
 
         return binding.root
     }
 
+    private fun itemClick() {
+        adapter?.onMoreClick = object : CourseAdapter.OnMoreClick {
+            override fun onClick(module: Module) {
+                val bundle = Bundle()
+                bundle.putSerializable("module", module)
+                findNavController().navigate(R.id.lessonFragment, bundle)
+            }
+        }
+    }
+
     @SuppressLint("CheckResult")
     private fun loadData() {
-        moduleList = ArrayList()
+        data = ArrayList()
 
         getDao!!.getModulesByCourceID(courseID!!)
             .subscribeOn(Schedulers.io())
@@ -74,60 +85,26 @@ class CourseFragment : Fragment() {
                     override fun accept(t: List<Module>) {
                         // adapterga set qilish kerak shu kelgan listni malumotini
 
-                        moduleList = t as ArrayList
-
-                        adapter?.submitList(t)
-
                         Log.d(TAG, "kursID: ${courseID}")
-                        Log.d(TAG, "module size: ${t.size}")
 
-                        adapter?.setAdapter(imagePath!!, courseName!!, getLessonCountList(t))
+                        for (i in 0 until t.size) {
+
+                            getDao!!.getLessonsByModuleID(t[i].id!!)
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(object : Consumer<List<Lesson>> {
+                                    override fun accept(lessonList: List<Lesson>?) {
+                                        data?.add(CourseModel(t[i], lessonList!!.size))
+                                        adapter?.submitList(data)
+                                        adapter?.setAdapter(imagePath!!, courseName!!)
+                                        Log.d(TAG, "count : ${lessonList?.size}")
+                                    }
+                                })
+                        }
+
                     }
-                },
-                object : io.reactivex.functions.Consumer<Throwable> {
-                    override fun accept(t: Throwable) {
-
-                    }
-                }, object : Action {
-                    override fun run() {
-
-                    }
-
                 })
-
         binding.courseRv.adapter = adapter
-
-    }
-
-    @SuppressLint("CheckResult")
-    private fun getLessonCountList(moduleList: List<Module>): ArrayList<Int> {
-        lessonCountList = ArrayList()
-        for (i in 0 until moduleList.size) {
-
-            getDao!!.getLessonsByModuleID(moduleList[i].id!!)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(object : Consumer<List<Lesson>> {
-                    override fun accept(lessonList: List<Lesson>?) {
-                        lessonCountList?.add(lessonList!!.size)
-                        adapter?.setAdapter(
-                            imagePath!!,
-                            courseName!!, lessonCountList!!
-                        )
-                    }
-                }, object : Consumer<Throwable> {
-                    override fun accept(t: Throwable?) {
-
-                    }
-
-                }, object : Action {
-                    override fun run() {
-
-                    }
-
-                })
-        }
-        return lessonCountList!!
     }
 
     companion object {

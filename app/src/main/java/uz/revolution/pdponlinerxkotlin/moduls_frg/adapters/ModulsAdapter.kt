@@ -17,6 +17,7 @@ class ModulsAdapter :
     private var courseName: String? = null
     var onEditClick: OnEditClick? = null
     var onDeleteClick: OnDeleteClick? = null
+    var onItemClick: OnItemClick? = null
 
     fun setModuleImage(imagePath: String, courseName: String) {
         this.imagePath = imagePath
@@ -38,6 +39,10 @@ class ModulsAdapter :
             binding.moduleTrash.setOnClickListener {
                 onDeleteClick?.onClick(module)
             }
+
+            binding.root.setOnClickListener {
+                onItemClick?.onClick(module)
+            }
         }
     }
 
@@ -54,6 +59,10 @@ class ModulsAdapter :
     }
 
     interface OnEditClick {
+        fun onClick(module: Module)
+    }
+
+    interface OnItemClick {
         fun onClick(module: Module)
     }
 
