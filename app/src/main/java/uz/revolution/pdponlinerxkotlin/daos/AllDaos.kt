@@ -23,8 +23,14 @@ interface AllDaos {
     @Delete
     fun deleteCourse(course: Course)
 
+    @Query("select COUNT(id) from module where courseID=:courseID")
+    fun getCourseSize(courseID: Int):Int
+
 
     //  mehtods for modules
+
+    @Query("select count(id) from lesson where moduleID=:moduleID")
+    fun getModuleSize(moduleID: Int):Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertModule(module: Module)
@@ -32,7 +38,7 @@ interface AllDaos {
     @Query("select * from module")
     fun getAllModules(): Flowable<List<Module>>
 
-    @Query("select * from module where courseID=:courseID")
+    @Query("select * from module where courseID=:courseID order by location")
     fun getModulesByCourceID(courseID: Int): Flowable<List<Module>>
 
     @Update
@@ -47,10 +53,10 @@ interface AllDaos {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertLesson(lesson: Lesson)
 
-    @Query("select * from lesson")
+    @Query("select * from lesson order by lessonLocation")
     fun getAllLessons(): Flowable<List<Lesson>>
 
-    @Query("select * from lesson where moduleID=:moduleID")
+    @Query("select * from lesson where moduleID=:moduleID order by lessonLocation")
     fun getLessonsByModuleID(moduleID: Int): Flowable<List<Lesson>>
 
     @Update

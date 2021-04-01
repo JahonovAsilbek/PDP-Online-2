@@ -12,7 +12,8 @@
         android:layout_height="wrap_content"
         android:text="Android Development"
         android:textColor="@android:color/black"
-        android:textSize="16sp"
+        android:textSize="18sp"
+        android:layout_marginStart="15dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

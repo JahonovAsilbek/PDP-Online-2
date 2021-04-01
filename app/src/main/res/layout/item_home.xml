@@ -1,26 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="130dp"
-    app:cardElevation="15dp"
-    android:outlineSpotShadowColor="#F4B63C"
-    android:outlineAmbientShadowColor="#F4B63C"
-    app:cardCornerRadius="10dp"
-    android:layout_marginTop="10dp"
+    android:layout_height="60dp"
     android:layout_marginStart="15dp"
+    android:layout_marginTop="10dp"
     android:layout_marginEnd="15dp"
     android:layout_marginBottom="10dp"
-    android:layout_height="60dp"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:outlineAmbientShadowColor="#F4B63C"
+    android:outlineSpotShadowColor="#F4B63C"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="15dp">
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/item_module"
         android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/modules_back"
         android:text="Java Basic"
         android:textAllCaps="false"
         android:textColor="@android:color/white"
-        android:textSize="16sp"
-        android:background="@drawable/modules_back"
-        android:layout_height="match_parent" />
+        android:textSize="16sp" />
 
 </androidx.cardview.widget.CardView>

@@ -21,13 +21,13 @@ import com.github.florent37.runtimepermission.kotlin.askPermission
 import com.google.android.material.snackbar.Snackbar
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.functions.Action
 import io.reactivex.schedulers.Schedulers
 import uz.revolution.pdponlinerxkotlin.R
 import uz.revolution.pdponlinerxkotlin.daos.AllDaos
 import uz.revolution.pdponlinerxkotlin.database.AppDatabase
 import uz.revolution.pdponlinerxkotlin.databinding.FragmentAddCourseBinding
 import uz.revolution.pdponlinerxkotlin.entities.Course
+import uz.revolution.pdponlinerxkotlin.entities.Module
 import uz.revolution.pdponlinerxkotlin.settings.adapters.AddCourseAdapter
 import java.io.File
 import java.io.FileOutputStream
@@ -80,7 +80,7 @@ class AddCourse : Fragment() {
     }
 
     private fun editClick() {
-        adapter?.onEditClick=object :AddCourseAdapter.OnEditClick{
+        adapter?.onEditClick = object : AddCourseAdapter.OnEditClick {
             override fun onClick(course: Course) {
                 val bundle = Bundle()
                 bundle.putSerializable("kurs", course)
@@ -93,27 +93,49 @@ class AddCourse : Fragment() {
     private fun deleteClick() {
         adapter?.onDeleteClick = object : AddCourseAdapter.OnDeleteClick {
             override fun onClick(course: Course) {
-                var dialog = AlertDialog.Builder(binding.root.context)
-                dialog.setMessage("Bu kurs ichida modullar kiritilgan. Modullar bilan birgalikda o’chib ketishiga rozimisiz? ")
-                dialog.setPositiveButton("Ha", object : DialogInterface.OnClickListener {
-                    override fun onClick(p0: DialogInterface?, p1: Int) {
-                        // delete course with its all modules
-                        Observable.fromCallable {
-                            getDao?.deleteCourse(course)
-                        }.subscribe()
-                        p0?.cancel()
-                        Snackbar.make(binding.root, "O'chirildi", Snackbar.LENGTH_LONG).show()
-                    }
 
-                })
-                dialog.setNegativeButton("Yo'q", object : DialogInterface.OnClickListener {
-                    override fun onClick(p0: DialogInterface?, p1: Int) {
-                        p0?.cancel()
-                    }
-                })
-                dialog.show()
+
+                if (!checkSize(course)) {
+
+                    val dialog = AlertDialog.Builder(binding.root.context)
+                    dialog.setMessage("Bu kurs ichida modullar kiritilgan. Modullar bilan birgalikda o’chib ketishiga rozimisiz? ")
+                    dialog.setPositiveButton("Ha", object : DialogInterface.OnClickListener {
+                        override fun onClick(p0: DialogInterface?, p1: Int) {
+                            // delete course with its all modules
+                            Observable.fromCallable {
+                                getDao?.deleteCourse(course)
+                            }.subscribe()
+                            p0?.cancel()
+                            Snackbar.make(binding.root, "O'chirildi", Snackbar.LENGTH_LONG).show()
+                        }
+
+                    })
+                    dialog.setNegativeButton("Yo'q", object : DialogInterface.OnClickListener {
+                        override fun onClick(p0: DialogInterface?, p1: Int) {
+                            p0?.cancel()
+                        }
+                    })
+                    dialog.show()
+                } else {
+
+                    Observable.fromCallable {
+                        getDao?.deleteCourse(course)
+                    }.subscribe()
+                    Snackbar.make(binding.root, "O'chirildi", Snackbar.LENGTH_LONG).show()
+
+                }
             }
         }
+    }
+
+    @SuppressLint("CheckResult")
+    private fun checkSize(course: Course): Boolean {
+        var check = true
+
+        if (getDao?.getCourseSize(course.id!!)!! > 0) {
+            check=false
+        }
+        return check
     }
 
     private fun checkCourseName(courseName: String): Boolean {
@@ -151,20 +173,6 @@ class AddCourse : Fragment() {
                         adapter?.submitList(dataCourse)
                         courseList = dataCourse as ArrayList
                     }
-                },
-                @RequiresApi(Build.VERSION_CODES.N)
-                object : Consumer<Throwable>, io.reactivex.functions.Consumer<Throwable> {
-
-                    override fun accept(p0: Throwable) {
-
-                    }
-
-                }, object : Action {
-
-                    override fun run() {
-
-                    }
-
                 })
 
         binding.courseRv.adapter = adapter
@@ -267,12 +275,6 @@ class AddCourse : Fragment() {
             }
 
             if (e.hasForeverDenied()) {
-//                appendText(resultView, "ForeverDenied :")
-                //the list of forever denied permissions, user has check 'never ask again'
-//                e.foreverDenied.forEach {
-//                    appendText(resultView, it)
-//                }
-                // you need to open setting manually if you really need it
                 e.goToSettings();
             }
         }
