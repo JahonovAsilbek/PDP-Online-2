@@ -2,15 +2,12 @@ package uz.revolution.pdponlinerxkotlin.home
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.functions.Action
 import io.reactivex.schedulers.Schedulers
 import uz.revolution.pdponlinerxkotlin.R
 import uz.revolution.pdponlinerxkotlin.daos.AllDaos
@@ -46,7 +43,7 @@ class HomeFragment : Fragment() {
     private var data: ArrayList<GeneralData>? = null
 
     private var generalAdapter: GeneralAdapter? = null
-    private var itemHomeAdapter: ItemHomeAdapter? = null
+    lateinit var itemHomeAdapter: ItemHomeAdapter
 
     lateinit var getDao: AllDaos
 
@@ -90,7 +87,7 @@ class HomeFragment : Fragment() {
             override fun onClick(module: Module) {
                 val bundle = Bundle()
                 bundle.putSerializable("module", module)
-                findNavController().navigate(R.id.lessonFragment,bundle)
+                findNavController().navigate(R.id.lessonFragment, bundle)
             }
         }
     }
@@ -108,50 +105,24 @@ class HomeFragment : Fragment() {
             .subscribe(object : io.reactivex.functions.Consumer<List<Course>> {
                 override fun accept(t: List<Course>?) {
 
-
-                    for (i in 0 until t!!.size) {
-                        courseID = t[i].id!!
-
-
-                        getDao.getModulesByCourceID(courseID)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(
-                                object : io.reactivex.functions.Consumer<List<Module>> {
-                                    override fun accept(p: List<Module>) {
-
-                                        data?.add(GeneralData(t[i], p))
-                                        generalAdapter?.setAdapter(binding.root.context, itemHomeAdapter!!)
-                                        generalAdapter?.submitList(data)
-
-                                    }
-                                },
-                                object : io.reactivex.functions.Consumer<Throwable> {
-                                    override fun accept(p0: Throwable) {
-
-                                    }
-                                }, object : Action {
-                                    override fun run() {
-
-                                    }
-                                })
+                    if (t != null) {
+                        for (i in 0 until t.size) {
+                            courseID = t[i].id!!
+                            getDao.getModulesByCourceID(courseID)
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(
+                                    object : io.reactivex.functions.Consumer<List<Module>> {
+                                        override fun accept(p: List<Module>) {
+                                            data?.add(GeneralData(t[i], p))
+                                            generalAdapter?.submitList(data)
+                                        }
+                                    })
+                        }
                     }
                 }
-
-            }, object : io.reactivex.functions.Consumer<Throwable> {
-                override fun accept(t: Throwable?) {
-
-                }
-
-            }, object : Action {
-
-                override fun run() {
-
-                }
-
             })
-
+        generalAdapter?.setAdapter(binding.root.context, itemHomeAdapter)
         binding.homeMainRv.adapter = generalAdapter
-
     }
 }

@@ -24,13 +24,13 @@ interface AllDaos {
     fun deleteCourse(course: Course)
 
     @Query("select COUNT(id) from module where courseID=:courseID")
-    fun getCourseSize(courseID: Int):Int
+    fun getCourseSize(courseID: Int): Int
 
 
     //  mehtods for modules
 
     @Query("select count(id) from lesson where moduleID=:moduleID")
-    fun getModuleSize(moduleID: Int):Int
+    fun getModuleSize(moduleID: Int): Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertModule(module: Module)

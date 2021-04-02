@@ -27,7 +27,6 @@ import uz.revolution.pdponlinerxkotlin.daos.AllDaos
 import uz.revolution.pdponlinerxkotlin.database.AppDatabase
 import uz.revolution.pdponlinerxkotlin.databinding.FragmentAddCourseBinding
 import uz.revolution.pdponlinerxkotlin.entities.Course
-import uz.revolution.pdponlinerxkotlin.entities.Module
 import uz.revolution.pdponlinerxkotlin.settings.adapters.AddCourseAdapter
 import java.io.File
 import java.io.FileOutputStream
@@ -133,7 +132,7 @@ class AddCourse : Fragment() {
         var check = true
 
         if (getDao?.getCourseSize(course.id!!)!! > 0) {
-            check=false
+            check = false
         }
         return check
     }

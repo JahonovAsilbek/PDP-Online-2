@@ -136,19 +136,7 @@ class EditCourse : Fragment() {
                 override fun accept(t: List<Course>?) {
                     courseList = t as ArrayList
                 }
-
-            }, object : Consumer<Throwable> {
-                override fun accept(t: Throwable?) {
-
-                }
-
-            }, object : Action {
-                override fun run() {
-
-                }
-
             })
-
     }
 
     private fun loadDataToView() {
