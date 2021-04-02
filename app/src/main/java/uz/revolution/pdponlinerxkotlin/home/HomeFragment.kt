@@ -83,7 +83,7 @@ class HomeFragment : Fragment() {
 
     private fun innerItemClick() {
         // ItemHomeAdapterni itemi bosilganda ishlaydigan listener
-        itemHomeAdapter?.onModuleClick = object : ItemHomeAdapter.OnModuleClick {
+        itemHomeAdapter.onModuleClick = object : ItemHomeAdapter.OnModuleClick {
             override fun onClick(module: Module) {
                 val bundle = Bundle()
                 bundle.putSerializable("module", module)

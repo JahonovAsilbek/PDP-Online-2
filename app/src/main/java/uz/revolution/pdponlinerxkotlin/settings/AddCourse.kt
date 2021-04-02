@@ -192,7 +192,7 @@ class AddCourse : Fragment() {
                     }.subscribe()
                     binding.addCourseImage.setImageResource(R.drawable.ic_baseline_image_24)
                     binding.addCourseEt.setText("")
-//                    absolutePath = null
+                    absolutePath = null
                     Toast.makeText(
                         binding.root.context,
                         "Muvaffaqiyatli qo'shildi!",
