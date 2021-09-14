@@ -7,8 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import uz.revolution.pdponlinerxkotlin.R
 import uz.revolution.pdponlinerxkotlin.daos.AllDaos
 import uz.revolution.pdponlinerxkotlin.database.AppDatabase
@@ -40,7 +38,7 @@ class HomeFragment : Fragment() {
     private val TAG = "AAAA"
 
     lateinit var binding: FragmentHomeBinding
-    private var data: ArrayList<GeneralData>? = null
+    lateinit var data: ArrayList<GeneralData>
 
     private var generalAdapter: GeneralAdapter? = null
     lateinit var itemHomeAdapter: ItemHomeAdapter
@@ -55,7 +53,6 @@ class HomeFragment : Fragment() {
 
         getDao = AppDatabase.get.getDatabase().getDao()
         loadData()
-        innerItemClick()
         allModulesClick()
         settingsClick()
 
@@ -81,17 +78,6 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun innerItemClick() {
-        // ItemHomeAdapterni itemi bosilganda ishlaydigan listener
-        itemHomeAdapter.onModuleClick = object : ItemHomeAdapter.OnModuleClick {
-            override fun onClick(module: Module) {
-                val bundle = Bundle()
-                bundle.putSerializable("module", module)
-                findNavController().navigate(R.id.lessonFragment, bundle)
-            }
-        }
-    }
-
     @SuppressLint("CheckResult")
     private fun loadData() {
         data = ArrayList()
@@ -99,30 +85,18 @@ class HomeFragment : Fragment() {
         itemHomeAdapter = ItemHomeAdapter(binding.root.context)
         var courseID: Int
 
-        getDao.getAllCourse()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(object : io.reactivex.functions.Consumer<List<Course>> {
-                override fun accept(t: List<Course>?) {
-
-                    if (t != null) {
-                        for (i in 0 until t.size) {
-                            courseID = t[i].id!!
-                            getDao.getModulesByCourceID(courseID)
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(
-                                    object : io.reactivex.functions.Consumer<List<Module>> {
-                                        override fun accept(p: List<Module>) {
-                                            data?.add(GeneralData(t[i], p))
-                                            generalAdapter?.submitList(data)
-                                        }
-                                    })
-                        }
-                    }
-                }
-            })
-        generalAdapter?.setAdapter(binding.root.context, itemHomeAdapter)
+        for (i in getDao.getAllCourse().indices) {
+            courseID = getDao.getAllCourse()[i].id!!
+            val moduleList = getDao.getModulesByCourceIDs(courseID)
+            data.add(GeneralData(getDao.getAllCourse()[i], moduleList))
+        }
+        generalAdapter?.setAdapter(binding.root.context,data, object :GeneralAdapter.OnModuleClick{
+            override fun onClick(module: Module) {
+                val bundle = Bundle()
+                bundle.putSerializable("module", module)
+                findNavController().navigate(R.id.lessonFragment, bundle)
+            }
+        })
         binding.homeMainRv.adapter = generalAdapter
     }
 }

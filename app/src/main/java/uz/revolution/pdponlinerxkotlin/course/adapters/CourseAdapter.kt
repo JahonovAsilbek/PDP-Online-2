@@ -4,25 +4,26 @@ import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import uz.revolution.pdponlinerxkotlin.databinding.ItemModuleBinding
 import uz.revolution.pdponlinerxkotlin.entities.Module
 import uz.revolution.pdponlinerxkotlin.models.CourseModel
 
-class CourseAdapter : ListAdapter<CourseModel, CourseAdapter.VH>(MyDiffUtil()) {
+class CourseAdapter : RecyclerView.Adapter<CourseAdapter.VH>() {
 
     private var courseName: String? = null
     private var imagePath: String? = null
     var onMoreClick: OnMoreClick? = null
+    lateinit var courseModel: ArrayList<CourseModel>
 
     fun setAdapter(
         imagePath: String,
-        courseName: String
+        courseName: String,
+        courseModel: ArrayList<CourseModel>
     ) {
         this.imagePath = imagePath
         this.courseName = courseName
+        this.courseModel = courseModel
     }
 
     inner class VH(var itemModuleBinding: ItemModuleBinding) :
@@ -51,22 +52,13 @@ class CourseAdapter : ListAdapter<CourseModel, CourseAdapter.VH>(MyDiffUtil()) {
     }
 
     override fun onBindViewHolder(holder: VH, position: Int) {
-        holder.onBind(getItem(position).module, getItem(position).lessonCount)
+        holder.onBind(courseModel[position].module, courseModel[position].lessonCount)
     }
 
     interface OnMoreClick {
         fun onClick(module: Module)
     }
 
-    class MyDiffUtil : DiffUtil.ItemCallback<CourseModel>() {
-        override fun areItemsTheSame(oldItem: CourseModel, newItem: CourseModel): Boolean {
-            return oldItem.module.id == newItem.module.id
-        }
-
-        override fun areContentsTheSame(oldItem: CourseModel, newItem: CourseModel): Boolean {
-            return oldItem.module.equals(newItem.module)
-        }
-
-    }
+    override fun getItemCount(): Int = courseModel.size
 
 }

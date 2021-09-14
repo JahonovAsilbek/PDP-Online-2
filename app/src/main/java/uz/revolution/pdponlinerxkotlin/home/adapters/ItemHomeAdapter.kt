@@ -13,10 +13,11 @@ class ItemHomeAdapter(var context: Context) :
     RecyclerView.Adapter<ItemHomeAdapter.VH>() {
 
     private var data: List<Module>? = null
-    var onModuleClick: OnModuleClick? = null
+    lateinit var onModuleClick: GeneralAdapter.OnModuleClick
 
-    fun setAdapter(data: List<Module>) {
+    fun setAdapter(data: List<Module>, onModuleClick: GeneralAdapter.OnModuleClick) {
         this.data = data
+        this.onModuleClick = onModuleClick
     }
 
     inner class VH(var itemHomeBinding: ItemHomeBinding) :
@@ -28,9 +29,7 @@ class ItemHomeAdapter(var context: Context) :
             itemHomeBinding.root.animation = AnimationUtils.loadAnimation(context, R.anim.anim2)
 
             itemHomeBinding.itemModule.setOnClickListener {
-                if (onModuleClick != null) {
-                    onModuleClick!!.onClick(module)
-                }
+                onModuleClick.onClick(module)
             }
         }
     }
@@ -45,8 +44,5 @@ class ItemHomeAdapter(var context: Context) :
 
     override fun getItemCount(): Int = data!!.size
 
-    interface OnModuleClick {
-        fun onClick(module: Module)
-    }
 
 }

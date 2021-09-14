@@ -15,7 +15,10 @@ interface AllDaos {
     fun insertCourse(course: Course)
 
     @Query("select * from course")
-    fun getAllCourse(): Flowable<List<Course>>
+    fun getAllCourse(): List<Course>
+
+    @Query("select * from course")
+    fun getAllCourses(): Flowable<List<Course>>
 
     @Update
     fun updateCourse(course: Course)
@@ -41,6 +44,9 @@ interface AllDaos {
     @Query("select * from module where courseID=:courseID order by location")
     fun getModulesByCourceID(courseID: Int): Flowable<List<Module>>
 
+    @Query("select * from module where courseID=:courseID order by location")
+    fun getModulesByCourceIDs(courseID: Int): List<Module>
+
     @Update
     fun updateModule(module: Module)
 
@@ -58,6 +64,9 @@ interface AllDaos {
 
     @Query("select * from lesson where moduleID=:moduleID order by lessonLocation")
     fun getLessonsByModuleID(moduleID: Int): Flowable<List<Lesson>>
+
+    @Query("select * from lesson where moduleID=:moduleID order by lessonLocation")
+    fun getLessonsByModuleIDs(moduleID: Int): List<Lesson>
 
     @Update
     fun updateLesson(lesson: Lesson)

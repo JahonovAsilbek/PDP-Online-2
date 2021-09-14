@@ -12,11 +12,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.functions.Action
-import io.reactivex.functions.Consumer
-import io.reactivex.schedulers.Schedulers
 import uz.revolution.pdponlinerxkotlin.database.AppDatabase
 import uz.revolution.pdponlinerxkotlin.databinding.FragmentEditCourseBinding
 import uz.revolution.pdponlinerxkotlin.entities.Course
@@ -28,13 +23,8 @@ import java.io.FileOutputStream
 private const val ARG_PARAM1 = "kurs"
 private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [EditCourse.newInstance] factory method to
- * create an instance of this fragment.
- */
 class EditCourse : Fragment() {
-    // TODO: Rename and change types of parameters
+
     private var course: Course? = null
     private var param2: String? = null
     var requestCOde = 1
@@ -63,8 +53,6 @@ class EditCourse : Fragment() {
         loadData()
         imageClick()
         editClick()
-
-
 
         return binding.root
     }
@@ -101,9 +89,7 @@ class EditCourse : Fragment() {
             if (courseName.isNotEmpty() && absolutePath != null) {
 
                 if (checkCourseName(courseName)) {
-                    Observable.fromCallable {
-                        AppDatabase.get.getDatabase().getDao().updateCourse(course)
-                    }.subscribe()
+                    AppDatabase.get.getDatabase().getDao().updateCourse(course)
 
                     Snackbar.make(
                         binding.root,
@@ -113,11 +99,13 @@ class EditCourse : Fragment() {
                         .show()
                     findNavController().popBackStack()
                 } else {
-                    Snackbar.make(binding.root, "$courseName nomli kurs mavjud", Snackbar.LENGTH_LONG)
+                    Snackbar.make(
+                        binding.root,
+                        "$courseName nomli kurs mavjud",
+                        Snackbar.LENGTH_LONG
+                    )
                         .show()
                 }
-
-
             } else {
                 Snackbar.make(binding.root, "Barcha maydonlarni to'ldiring!", Snackbar.LENGTH_LONG)
                     .show()
@@ -128,15 +116,7 @@ class EditCourse : Fragment() {
     @SuppressLint("CheckResult")
     private fun loadData() {
         courseList = ArrayList()
-
-        AppDatabase.get.getDatabase().getDao().getAllCourse()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(object : Consumer<List<Course>> {
-                override fun accept(t: List<Course>?) {
-                    courseList = t as ArrayList
-                }
-            })
+        courseList = AppDatabase.get.getDatabase().getDao().getAllCourse() as ArrayList
     }
 
     private fun loadDataToView() {
@@ -160,9 +140,7 @@ class EditCourse : Fragment() {
                 break
             }
         }
-
         return check
-
     }
 
     companion object {

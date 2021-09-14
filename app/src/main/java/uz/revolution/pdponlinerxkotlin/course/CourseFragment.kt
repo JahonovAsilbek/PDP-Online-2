@@ -27,7 +27,7 @@ private const val ARG_PARAM3 = "courseImagePath"
 
 class CourseFragment : Fragment() {
 
-    private var courseID: Int? = null
+    var courseID: Int = 0
     private var courseName: String? = null
     private var imagePath: String? = null
     private val TAG = "AAAA"
@@ -44,8 +44,8 @@ class CourseFragment : Fragment() {
     }
 
     lateinit var binding: FragmentCourseBinding
-    private var getDao: AllDaos? = null
-    private var data: ArrayList<CourseModel>? = null
+    lateinit var getDao: AllDaos
+    lateinit var data: ArrayList<CourseModel>
 
     private var adapter: CourseAdapter? = null
 
@@ -77,33 +77,13 @@ class CourseFragment : Fragment() {
     private fun loadData() {
         data = ArrayList()
 
-        getDao!!.getModulesByCourceID(courseID!!)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                object : io.reactivex.functions.Consumer<List<Module>> {
-                    override fun accept(t: List<Module>) {
-                        // adapterga set qilish kerak shu kelgan listni malumotini
+        for (i in getDao.getModulesByCourceIDs(courseID).indices) {
+            val moduleID = getDao.getModulesByCourceIDs(courseID)[i].id
+            val lessonList = getDao.getLessonsByModuleIDs(moduleID!!) as ArrayList
+            data.add(CourseModel(getDao.getModulesByCourceIDs(courseID)[i], lessonList.size))
+        }
 
-                        Log.d(TAG, "kursID: ${courseID}")
-
-                        for (i in 0 until t.size) {
-
-                            getDao!!.getLessonsByModuleID(t[i].id!!)
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(object : Consumer<List<Lesson>> {
-                                    override fun accept(lessonList: List<Lesson>?) {
-                                        data?.add(CourseModel(t[i], lessonList!!.size))
-                                        adapter?.submitList(data)
-                                        adapter?.setAdapter(imagePath!!, courseName!!)
-                                        Log.d(TAG, "count : ${lessonList?.size}")
-                                    }
-                                })
-                        }
-
-                    }
-                })
+        adapter?.setAdapter(imagePath!!, courseName!!, data)
         binding.courseRv.adapter = adapter
     }
 

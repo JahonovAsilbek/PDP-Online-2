@@ -4,12 +4,11 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import uz.revolution.pdponlinerxkotlin.databinding.ItemLesson2Binding
 import uz.revolution.pdponlinerxkotlin.entities.Lesson
 
-class Lesson2Adapter : ListAdapter<Lesson, Lesson2Adapter.Vh>(MyDiffUtil()) {
+class Lesson2Adapter(var data: ArrayList<Lesson>) : RecyclerView.Adapter<Lesson2Adapter.Vh>() {
 
     var onItemClick: OnItemClick? = null
 
@@ -17,22 +16,10 @@ class Lesson2Adapter : ListAdapter<Lesson, Lesson2Adapter.Vh>(MyDiffUtil()) {
         @SuppressLint("SetTextI18n")
         fun onBind(lesson: Lesson) {
             binding.lessonLocation.text = "${lesson.lessonLocation}\ndars"
-            binding
 
             binding.root.setOnClickListener {
                 onItemClick?.onClick(lesson)
             }
-        }
-    }
-
-    class MyDiffUtil : DiffUtil.ItemCallback<Lesson>() {
-
-        override fun areItemsTheSame(oldItem: Lesson, newItem: Lesson): Boolean {
-            return oldItem.id == newItem.id
-        }
-
-        override fun areContentsTheSame(oldItem: Lesson, newItem: Lesson): Boolean {
-            return oldItem.equals(newItem)
         }
     }
 
@@ -45,6 +32,9 @@ class Lesson2Adapter : ListAdapter<Lesson, Lesson2Adapter.Vh>(MyDiffUtil()) {
     }
 
     override fun onBindViewHolder(holder: Vh, position: Int) {
-        holder.onBind(getItem(position))
+        holder.onBind(data[position])
     }
+
+    override fun getItemCount(): Int = data.size
+
 }

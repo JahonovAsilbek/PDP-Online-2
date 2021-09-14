@@ -32,21 +32,10 @@ import java.io.File
 import java.io.FileOutputStream
 import java.util.function.Consumer
 
-
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
 class AddCourse : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
         getDao = AppDatabase.get.getDatabase().getDao()
     }
 
@@ -62,13 +51,7 @@ class AddCourse : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-//        binding = FragmentAddCourseBinding.inflate(layoutInflater, container, false)
-        binding = FragmentAddCourseBinding.inflate(
-            LayoutInflater.from(container?.context),
-            container,
-            false
-        )
-
+        binding = FragmentAddCourseBinding.inflate(layoutInflater, null, false)
         loadData()
         imageClick()
         saveClick()
@@ -85,7 +68,6 @@ class AddCourse : Fragment() {
                 bundle.putSerializable("kurs", course)
                 findNavController().navigate(R.id.editCourse, bundle)
             }
-
         }
     }
 
@@ -93,22 +75,17 @@ class AddCourse : Fragment() {
         adapter?.onDeleteClick = object : AddCourseAdapter.OnDeleteClick {
             override fun onClick(course: Course) {
 
-
                 if (!checkSize(course)) {
-
                     val dialog = AlertDialog.Builder(binding.root.context)
                     dialog.setMessage("Bu kurs ichida modullar kiritilgan. Modullar bilan birgalikda o’chib ketishiga rozimisiz? ")
-                    dialog.setPositiveButton("Ha", object : DialogInterface.OnClickListener {
-                        override fun onClick(p0: DialogInterface?, p1: Int) {
-                            // delete course with its all modules
-                            Observable.fromCallable {
-                                getDao?.deleteCourse(course)
-                            }.subscribe()
-                            p0?.cancel()
-                            Snackbar.make(binding.root, "O'chirildi", Snackbar.LENGTH_LONG).show()
-                        }
-
-                    })
+                    dialog.setPositiveButton("Ha"
+                    ) { p0, p1 -> // delete course with its all modules
+                        Observable.fromCallable {
+                            getDao?.deleteCourse(course)
+                        }.subscribe()
+                        p0?.cancel()
+                        Snackbar.make(binding.root, "O'chirildi", Snackbar.LENGTH_LONG).show()
+                    }
                     dialog.setNegativeButton("Yo'q", object : DialogInterface.OnClickListener {
                         override fun onClick(p0: DialogInterface?, p1: Int) {
                             p0?.cancel()
@@ -162,7 +139,7 @@ class AddCourse : Fragment() {
             }
         }
 
-        getDao!!.getAllCourse()
+        getDao!!.getAllCourses()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
@@ -277,16 +254,5 @@ class AddCourse : Fragment() {
                 e.goToSettings();
             }
         }
-    }
-
-    companion object {
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            AddCourse().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
     }
 }

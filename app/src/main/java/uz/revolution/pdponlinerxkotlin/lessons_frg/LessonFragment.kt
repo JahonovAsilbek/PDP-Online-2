@@ -1,16 +1,11 @@
 package uz.revolution.pdponlinerxkotlin.lessons_frg
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.functions.Consumer
-import io.reactivex.schedulers.Schedulers
 import uz.revolution.pdponlinerxkotlin.R
 import uz.revolution.pdponlinerxkotlin.database.AppDatabase
 import uz.revolution.pdponlinerxkotlin.databinding.FragmentLessonsBinding
@@ -47,32 +42,23 @@ class LessonFragment : Fragment() {
         loadData()
         itemClick()
 
-
         return binding.root
     }
 
     private fun itemClick() {
-        adapter?.onItemClick=object :Lesson2Adapter.OnItemClick{
+        adapter?.onItemClick = object : Lesson2Adapter.OnItemClick {
             override fun onClick(lesson: Lesson) {
                 val bundle = Bundle()
                 bundle.putSerializable("lesson", lesson)
-                findNavController().navigate(R.id.itemLesson,bundle)
+                findNavController().navigate(R.id.itemLesson, bundle)
             }
         }
     }
 
-    @SuppressLint("CheckResult")
     private fun loadData() {
-        adapter = Lesson2Adapter()
-
-        AppDatabase.get.getDatabase().getDao().getLessonsByModuleID(module?.id!!)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(object : Consumer<List<Lesson>> {
-                override fun accept(t: List<Lesson>?) {
-                    adapter?.submitList(t)
-                }
-            })
+        adapter = Lesson2Adapter(
+            AppDatabase.get.getDatabase().getDao().getLessonsByModuleIDs(module?.id!!) as ArrayList
+        )
         binding.lessonsRv.adapter = adapter
     }
 
